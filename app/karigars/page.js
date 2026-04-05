@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { redirect } from "next/navigation";
 
 export default function Karigars() {
   const [rows, setRows] = useState([]);
@@ -30,31 +29,49 @@ export default function Karigars() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-extrabold text-stone-900">कारीगर</h1>
-        <button onClick={() => setShow(true)} className="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">+ नया कारीगर</button>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-stone-900">कारीगर</h1>
+        <button onClick={() => setShow(true)} className="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg">+ नया कारीगर</button>
       </div>
 
       {show && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 shadow-xl">
             <h2 className="text-lg font-bold text-stone-900">नया कारीगर जोड़ें</h2>
             {[["name","नाम"],["phone","मोबाइल नंबर"],["advance","अग्रिम (₹)"]].map(([k,l]) => (
               <input key={k} placeholder={l} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})}
-                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-amber-400" />
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base outline-none focus:border-amber-400" />
             ))}
             <select value={form.stage} onChange={e => setForm({...form, stage: e.target.value})}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-amber-400">
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base outline-none focus:border-amber-400">
               {["आरी","घिसाई","पॉलिश","जाँच"].map(s => <option key={s}>{s}</option>)}
             </select>
             <div className="flex gap-3 pt-2">
-              <button onClick={submit} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 rounded-lg text-sm">सेव करें</button>
-              <button onClick={() => setShow(false)} className="flex-1 border border-gray-200 text-stone-600 font-semibold py-2 rounded-lg text-sm">रद्द करें</button>
+              <button onClick={submit} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-lg text-base">सेव करें</button>
+              <button onClick={() => setShow(false)} className="flex-1 border border-gray-200 text-stone-600 font-semibold py-3 rounded-lg text-base">रद्द करें</button>
             </div>
           </div>
         </div>
       )}
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-3">
+        {rows.length === 0 ? (
+          <p className="text-center text-stone-400 py-8">कोई कारीगर नहीं</p>
+        ) : rows.map(row => (
+          <div key={row.id} className="bg-white border border-gray-200 rounded-xl p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="font-extrabold text-stone-800 text-lg">{row.name}</p>
+              <button onClick={() => del(row.id)} className="text-red-400 text-sm font-semibold">हटाएं</button>
+            </div>
+            <p className="text-stone-500 text-sm">📱 {row.phone || "—"}</p>
+            <p className="text-stone-500 text-sm">काम: {row.stage}</p>
+            <p className="text-stone-500 text-sm">अग्रिम: ₹{row.advance || 0}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block bg-white border border-gray-200 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
@@ -65,7 +82,7 @@ export default function Karigars() {
           </thead>
           <tbody>
             {rows.length === 0 ? (
-              <tr><td colSpan={5} className="px-5 py-8 text-center text-stone-400 font-medium">कोई कारीगर नहीं</td></tr>
+              <tr><td colSpan={5} className="px-5 py-8 text-center text-stone-400">कोई कारीगर नहीं</td></tr>
             ) : rows.map(row => (
               <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="px-5 py-3 font-semibold text-stone-700">{row.name}</td>

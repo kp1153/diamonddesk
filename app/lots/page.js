@@ -29,31 +29,50 @@ export default function Lots() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-extrabold text-stone-900">लॉट</h1>
-        <button onClick={() => setShow(true)} className="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">+ नया लॉट</button>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-stone-900">लॉट</h1>
+        <button onClick={() => setShow(true)} className="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg">+ नया लॉट</button>
       </div>
 
       {show && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 shadow-xl">
             <h2 className="text-lg font-bold text-stone-900">नया लॉट जोड़ें</h2>
             {[["lotNo","लॉट नंबर"],["roughWeight","कच्चा वजन (कैरेट)"],["polishWeight","पॉलिश वजन (कैरेट)"],["shape","आकार"],["quality","गुणवत्ता"]].map(([k,l]) => (
               <input key={k} placeholder={l} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})}
-                className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-amber-400" />
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base outline-none focus:border-amber-400" />
             ))}
             <select value={form.status} onChange={e => setForm({...form, status: e.target.value})}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-amber-400">
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base outline-none focus:border-amber-400">
               {["लंबित","काम चल रहा है","पूर्ण"].map(s => <option key={s}>{s}</option>)}
             </select>
             <div className="flex gap-3 pt-2">
-              <button onClick={submit} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 rounded-lg text-sm">सेव करें</button>
-              <button onClick={() => setShow(false)} className="flex-1 border border-gray-200 text-stone-600 font-semibold py-2 rounded-lg text-sm">रद्द करें</button>
+              <button onClick={submit} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-lg text-base">सेव करें</button>
+              <button onClick={() => setShow(false)} className="flex-1 border border-gray-200 text-stone-600 font-semibold py-3 rounded-lg text-base">रद्द करें</button>
             </div>
           </div>
         </div>
       )}
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      {/* Mobile card view */}
+      <div className="md:hidden space-y-3">
+        {rows.length === 0 ? (
+          <p className="text-center text-stone-400 py-8">कोई लॉट नहीं</p>
+        ) : rows.map(row => (
+          <div key={row.id} className="bg-white border border-gray-200 rounded-xl p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="font-extrabold text-stone-800 text-lg">{row.lotNo}</p>
+              <button onClick={() => del(row.id)} className="text-red-400 text-sm font-semibold">हटाएं</button>
+            </div>
+            <p className="text-stone-500 text-sm">कच्चा वजन: {row.roughWeight} कैरेट</p>
+            <p className="text-stone-500 text-sm">पॉलिश वजन: {row.polishWeight ? `${row.polishWeight} कैरेट` : "—"}</p>
+            <p className="text-stone-500 text-sm">आकार: {row.shape || "—"} | गुणवत्ता: {row.quality || "—"}</p>
+            <p className="text-stone-500 text-sm">स्थिति: {row.status}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block bg-white border border-gray-200 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
@@ -64,7 +83,7 @@ export default function Lots() {
           </thead>
           <tbody>
             {rows.length === 0 ? (
-              <tr><td colSpan={7} className="px-5 py-8 text-center text-stone-400 font-medium">कोई लॉट नहीं</td></tr>
+              <tr><td colSpan={7} className="px-5 py-8 text-center text-stone-400">कोई लॉट नहीं</td></tr>
             ) : rows.map(row => (
               <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="px-5 py-3 font-semibold text-stone-700">{row.lotNo}</td>
