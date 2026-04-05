@@ -3,10 +3,13 @@ import { karigars, lots, assignments } from "@/lib/schema";
 import { eq, and, count } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
   const cookieStore = await cookies();
   const session = await getSession(cookieStore.get("session")?.value);
+
+  if (!session) redirect("/");
 
   const [karigarCount, lotCount, pendingAssign] = await Promise.all([
     db.select({ count: count() }).from(karigars).where(eq(karigars.userId, session.userId)),
