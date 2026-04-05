@@ -1,43 +1,37 @@
-"use client";
-import { useEffect, useState } from "react";
+import { db } from "@/lib/db";
+import { karigars, lots, assignments, sales } from "@/lib/schema";
+import { eq, and, sum, count } from "drizzle-orm";
+import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
-export default function Reports() {
-  const [data, setData] = useState(null);
+export default async function Reports() {
+  const cookieStore = await cookies();
+  const session = await getSession(cookieStore.get("session")?.value);
+  if (!session) redirect("/");
 
-  useEffect(() => {
-    Promise.all([
-      fetch("/api/inventory").then(r => r.json()),
-      fetch("/api/sales").then(r => r.json()),
-      fetch("/api/labour").then(r => r.json()),
-      fetch("/api/gst").then(r => r.json()),
-      fetch("/api/manufacturing").then(r => r.json()),
-    ]).then(([inv, sal, lab, gst, mfg]) => setData({ inv, sal, lab, gst, mfg }));
-  }, []);
+  const [कुलकारीगर, कुललॉट, लंबितकाम, कुलबिक्री] = await Promise.all([
+    db.select({ count: count() }).from(karigars).where(eq(karigars.userId, session.userId)),
+    db.select({ count: count() }).from(lots).where(eq(lots.userId, session.userId)),
+    db.select({ count: count() }).from(assignments).where(and(eq(assignments.userId, session.userId), eq(assignments.status, "लंबित"))),
+    db.select({ total: sum(sales.amount) }).from(sales).where(eq(sales.userId, session.userId)),
+  ]);
 
-  if (!data) return <div className="text-stone-400 text-sm">लोड हो रहा है...</div>;
-
-  const totalSales = data.sal.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
-  const totalGST = data.gst.reduce((s, r) => s + (parseFloat(r.gst_amount) || 0), 0);
-  const totalWages = data.lab.reduce((s, r) => s + (parseFloat(r.wages) || 0), 0);
-  const presentWorkers = data.lab.filter(r => r.attendance === "Present").length;
-
-  const cards = [
-    { label: "कुल स्टॉक", value: data.inv.length + " stones", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
-    { label: "कुल बिक्री", value: "₹" + totalSales.toLocaleString("en-IN"), color: "text-green-600", bg: "bg-green-50 border-green-200" },
-    { label: "कुल GST", value: "₹" + totalGST.toLocaleString("en-IN"), color: "text-orange-600", bg: "bg-orange-50 border-orange-200" },
-    { label: "कुल मज़दूरी", value: "₹" + totalWages.toLocaleString("en-IN"), color: "text-purple-600", bg: "bg-purple-50 border-purple-200" },
-    { label: "हाज़िर कारीगर", value: presentWorkers, color: "text-amber-600", bg: "bg-amber-50 border-amber-200" },
-    { label: "Manufacturing Jobs", value: data.mfg.length, color: "text-stone-600", bg: "bg-gray-50 border-gray-200" },
+  const stats = [
+    { शीर्षक: "कुल कारीगर", मूल्य: कुलकारीगर[0].count, रंग: "text-amber-500", पृष्ठभूमि: "bg-amber-50 border-amber-200" },
+    { शीर्षक: "कुल लॉट", मूल्य: कुललॉट[0].count, रंग: "text-blue-600", पृष्ठभूमि: "bg-blue-50 border-blue-200" },
+    { शीर्षक: "लंबित काम", मूल्य: लंबितकाम[0].count, रंग: "text-orange-600", पृष्ठभूमि: "bg-orange-50 border-orange-200" },
+    { शीर्षक: "कुल बिक्री", मूल्य: `₹${कुलबिक्री[0].total || 0}`, रंग: "text-green-600", पृष्ठभूमि: "bg-green-50 border-green-200" },
   ];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-extrabold text-stone-900 tracking-tight">Reports</h1>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {cards.map(({ label, value, color, bg }) => (
-          <div key={label} className={`border rounded-xl p-5 ${bg}`}>
-            <p className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">{label}</p>
-            <p className={`text-2xl font-extrabold ${color}`}>{value}</p>
+    <div className="space-y-8">
+      <h1 className="text-3xl font-extrabold text-stone-900">रिपोर्ट</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((s) => (
+          <div key={s.शीर्षक} className={`border rounded-xl p-5 ${s.पृष्ठभूमि}`}>
+            <p className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">{s.शीर्षक}</p>
+            <p className={`text-4xl font-extrabold ${s.रंग}`}>{s.मूल्य}</p>
           </div>
         ))}
       </div>

@@ -1,0 +1,23 @@
+{
+  "name": "heeradesk",
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "dist": "electron-builder build --win"
+  },
+  "build": {
+    "appId": "com.nishant.heeradesk",
+    "productName": "Heera Desk",
+    "icon": "icon.ico",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

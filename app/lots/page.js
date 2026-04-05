@@ -1,45 +1,49 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export default function Sales() {
+export default function Lots() {
   const [rows, setRows] = useState([]);
   const [show, setShow] = useState(false);
-  const [form, setForm] = useState({ invoiceNo: "", buyer: "", date: "", weight: "", amount: "", status: "लंबित" });
+  const [form, setForm] = useState({ lotNo: "", roughWeight: "", polishWeight: "", shape: "", quality: "", status: "लंबित" });
 
-  const load = () => fetch("/api/sales").then(r => r.json()).then(data => { if (Array.isArray(data)) setRows(data); });
+  const load = () => fetch("/api/lots").then(r => r.json()).then(data => {
+    if (!Array.isArray(data)) return;
+    setRows(data);
+  });
+
   useEffect(() => { load(); }, []);
 
   const submit = async () => {
-    await fetch("/api/sales", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    await fetch("/api/lots", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
     setShow(false);
-    setForm({ invoiceNo: "", buyer: "", date: "", weight: "", amount: "", status: "लंबित" });
+    setForm({ lotNo: "", roughWeight: "", polishWeight: "", shape: "", quality: "", status: "लंबित" });
     load();
   };
 
   const del = async (id) => {
     if (!confirm("हटाएं?")) return;
-    await fetch("/api/sales", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    await fetch("/api/lots", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     load();
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-extrabold text-stone-900">बिक्री</h1>
-        <button onClick={() => setShow(true)} className="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">+ नई बिक्री</button>
+        <h1 className="text-3xl font-extrabold text-stone-900">लॉट</h1>
+        <button onClick={() => setShow(true)} className="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">+ नया लॉट</button>
       </div>
 
       {show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 shadow-xl">
-            <h2 className="text-lg font-bold text-stone-900">नई बिक्री जोड़ें</h2>
-            {[["invoiceNo","बिल नंबर"],["buyer","पार्टी का नाम"],["date","तारीख (YYYY-MM-DD)"],["weight","वजन (कैरेट)"],["amount","राशि (₹)"]].map(([k,l]) => (
+            <h2 className="text-lg font-bold text-stone-900">नया लॉट जोड़ें</h2>
+            {[["lotNo","लॉट नंबर"],["roughWeight","कच्चा वजन (कैरेट)"],["polishWeight","पॉलिश वजन (कैरेट)"],["shape","आकार"],["quality","गुणवत्ता"]].map(([k,l]) => (
               <input key={k} placeholder={l} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})}
                 className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-amber-400" />
             ))}
             <select value={form.status} onChange={e => setForm({...form, status: e.target.value})}
               className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-amber-400">
-              {["लंबित","भुगतान हो गया","रद्द"].map(s => <option key={s}>{s}</option>)}
+              {["लंबित","काम चल रहा है","पूर्ण"].map(s => <option key={s}>{s}</option>)}
             </select>
             <div className="flex gap-3 pt-2">
               <button onClick={submit} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 rounded-lg text-sm">सेव करें</button>
@@ -53,21 +57,21 @@ export default function Sales() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              {["बिल नंबर","पार्टी","तारीख","वजन","राशि","स्थिति",""].map(h => (
+              {["लॉट नंबर","कच्चा वजन","पॉलिश वजन","आकार","गुणवत्ता","स्थिति",""].map(h => (
                 <th key={h} className="px-5 py-3 text-left text-xs font-bold text-stone-500 uppercase tracking-widest">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
-              <tr><td colSpan={7} className="px-5 py-8 text-center text-stone-400 font-medium">कोई बिक्री नहीं</td></tr>
+              <tr><td colSpan={7} className="px-5 py-8 text-center text-stone-400 font-medium">कोई लॉट नहीं</td></tr>
             ) : rows.map(row => (
               <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="px-5 py-3 font-semibold text-stone-700">{row.invoiceNo}</td>
-                <td className="px-5 py-3 text-stone-600">{row.buyer}</td>
-                <td className="px-5 py-3 text-stone-600">{row.date}</td>
-                <td className="px-5 py-3 text-stone-600">{row.weight} कैरेट</td>
-                <td className="px-5 py-3 text-stone-600">₹{row.amount}</td>
+                <td className="px-5 py-3 font-semibold text-stone-700">{row.lotNo}</td>
+                <td className="px-5 py-3 text-stone-600">{row.roughWeight} कैरेट</td>
+                <td className="px-5 py-3 text-stone-600">{row.polishWeight ? `${row.polishWeight} कैरेट` : "—"}</td>
+                <td className="px-5 py-3 text-stone-600">{row.shape || "—"}</td>
+                <td className="px-5 py-3 text-stone-600">{row.quality || "—"}</td>
                 <td className="px-5 py-3 text-stone-600">{row.status}</td>
                 <td className="px-5 py-3"><button onClick={() => del(row.id)} className="text-red-400 hover:text-red-600 text-xs font-semibold">हटाएं</button></td>
               </tr>

@@ -3,13 +3,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
-  { label: "Dashboard", href: "/dashboard", icon: "▦" },
-  { label: "Karigars", href: "/karigars", icon: "◉" },
-  { label: "Lots", href: "/lots", icon: "◈" },
-  { label: "Assignments", href: "/assignments", icon: "⚙" },
-  { label: "Sales", href: "/sales", icon: "◎" },
-  { label: "Reports", href: "/reports", icon: "≡" },
-  { label: "Settings", href: "/settings", icon: "⊙" },
+  { label: "डैशबोर्ड", href: "/dashboard", icon: "▦" },
+  { label: "कारीगर", href: "/karigars", icon: "◉" },
+  { label: "लॉट", href: "/lots", icon: "◈" },
+  { label: "काम सौंपें", href: "/assignments", icon: "⚙" },
+  { label: "बिक्री", href: "/sales", icon: "◎" },
+  { label: "रिपोर्ट", href: "/reports", icon: "≡" },
+  { label: "सेटिंग", href: "/settings", icon: "⊙" },
 ];
 
 export default function Sidebar() {
@@ -17,8 +17,8 @@ export default function Sidebar() {
   return (
     <aside className="w-56 h-screen bg-white border-r border-gray-200 flex flex-col">
       <div className="px-6 py-5 border-b border-gray-100">
-        <p className="text-lg font-bold text-stone-900">Diamond<span className="text-amber-500">Desk</span></p>
-        <p className="text-[10px] tracking-widest text-amber-500 uppercase">by Nishant Softwares</p>
+        <p className="text-lg font-bold text-stone-900">हीरा<span className="text-amber-500">डेस्क</span></p>
+        <p className="text-[10px] tracking-widest text-amber-500 uppercase">निशांत सॉफ्टवेयर्स</p>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1">
         {links.map(({ label, href, icon }) => (
@@ -32,7 +32,7 @@ export default function Sidebar() {
       </nav>
       <div className="px-4 py-4 border-t border-gray-100">
         <Link href="/api/auth/logout" className="w-full text-xs text-stone-400 hover:text-red-500 transition-colors">
-          Logout
+          लॉगआउट
         </Link>
       </div>
     </aside>
