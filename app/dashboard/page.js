@@ -10,6 +10,18 @@ export default async function Dashboard() {
   const session = await getSession(cookieStore.get("session")?.value);
   if (!session) redirect("/");
 
+  // expiry check
+  if (session.status !== "active") {
+    const expiry = session.expiryDate ? new Date(session.expiryDate) : null;
+    if (!expiry || new Date() > expiry) {
+      redirect("https://web-developer-kp.com/heera?email=" + encodeURIComponent(session.email));
+    }
+  }
+
+  const daysLeft = session.expiryDate
+    ? Math.ceil((new Date(session.expiryDate) - new Date()) / (1000 * 60 * 60 * 24))
+    : 0;
+
   const [karigarCount, lotCount, pendingAssign] = await Promise.all([
     db.select({ count: count() }).from(karigars).where(eq(karigars.userId, session.userId)),
     db.select({ count: count() }).from(lots).where(eq(lots.userId, session.userId)),
@@ -30,6 +42,23 @@ export default async function Dashboard() {
         <h1 className="text-2xl md:text-3xl font-extrabold text-stone-900">डैशबोर्ड</h1>
         <p className="text-stone-400 text-sm mt-1">नमस्ते, {session.name}</p>
       </div>
+
+      {session.status === "trial" && daysLeft <= 3 && (
+        <div className="bg-red-50 border border-red-200 rounded-xl px-5 py-4">
+          <p className="text-red-600 font-bold text-sm">⚠️ आपका मुफ्त परीक्षण {daysLeft} दिन में समाप्त होगा।</p>
+          <a href={"https://web-developer-kp.com/heera?email=" + encodeURIComponent(session.email)}
+            className="inline-block mt-2 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-red-600 transition">
+            अभी खरीदें
+          </a>
+        </div>
+      )}
+
+      {session.status === "trial" && daysLeft > 3 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-4">
+          <p className="text-amber-600 font-semibold text-sm">⏳ मुफ्त परीक्षण चल रहा है — {daysLeft} दिन बचे हैं।</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4">
         {stats.map(({ label, value, color, bg }) => (
           <div key={label} className={`border rounded-xl p-5 ${bg}`}>

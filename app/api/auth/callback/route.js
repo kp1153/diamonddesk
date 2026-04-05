@@ -28,18 +28,24 @@ export async function GET(request) {
 
   let existing = await db.select().from(users).where(eq(users.email, googleUser.email));
   let user;
+
   if (existing.length === 0) {
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 7);
     const inserted = await db.insert(users).values({
       email: googleUser.email,
       name: googleUser.name,
       image: googleUser.picture,
+      status: "trial",
+      expiryDate: expiry,
+      reminderSent: "no",
     }).returning();
     user = inserted[0];
   } else {
     user = existing[0];
   }
 
-  const token = await createSession(user.id, user.email, user.name);
+  const token = await createSession(user.id, user.email, user.name, user.status, user.expiryDate);
 
   cookieStore.set("session", token, {
     httpOnly: true,
