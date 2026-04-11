@@ -10,11 +10,10 @@ export default async function Dashboard() {
   const session = await getSession(cookieStore.get("session")?.value);
   if (!session) redirect("/");
 
-  // expiry check
   if (session.status !== "active") {
     const expiry = session.expiryDate ? new Date(session.expiryDate) : null;
     if (!expiry || new Date() > expiry) {
-      redirect("https://web-developer-kp.com/heera?email=" + encodeURIComponent(session.email));
+      redirect("https://heera.nishantsoftwares.in?expired=1");
     }
   }
 
@@ -46,7 +45,7 @@ export default async function Dashboard() {
       {session.status === "trial" && daysLeft <= 3 && (
         <div className="bg-red-50 border border-red-200 rounded-xl px-5 py-4">
           <p className="text-red-600 font-bold text-sm">⚠️ आपका मुफ्त परीक्षण {daysLeft} दिन में समाप्त होगा।</p>
-          <a href={"https://web-developer-kp.com/heera?email=" + encodeURIComponent(session.email)}
+          <a href={"https://nishantsoftwares.in/heera?email=" + encodeURIComponent(session.email)}
             className="inline-block mt-2 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-red-600 transition">
             अभी खरीदें
           </a>
