@@ -1,15 +1,15 @@
 import { google } from "@/lib/auth";
 import { generateState, generateCodeVerifier } from "arctic";
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
   const url = google.createAuthorizationURL(state, codeVerifier, ["openid", "profile", "email"]);
 
-  const cookieStore = await cookies();
-  cookieStore.set("oauth_state", state, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: true });
-  cookieStore.set("code_verifier", codeVerifier, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: true });
+  const response = NextResponse.redirect(url.toString());
+  response.cookies.set("oauth_state", state, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: true });
+  response.cookies.set("code_verifier", codeVerifier, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: true });
 
-  return Response.redirect(url.toString());
+  return response;
 }
