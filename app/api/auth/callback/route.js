@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -47,12 +48,14 @@ export async function GET(request) {
 
   const token = await createSession(user.id, user.email, user.name, user.status, user.expiryDate);
 
-  cookieStore.set("session", token, {
+  const response = NextResponse.redirect(new URL("/dashboard", request.url));
+  response.cookies.set("session", token, {
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 7,
     path: "/",
     sameSite: "lax",
+    secure: true,
   });
 
-  return Response.redirect(new URL("/dashboard", request.url));
+  return response;
 }
