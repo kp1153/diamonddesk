@@ -2,11 +2,14 @@
   "name": "diamonddesk",
   "version": "0.1.0",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "electron": "electron .",
+    "electron:build": "electron-builder --win --x64"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
@@ -22,8 +25,17 @@
     "@tailwindcss/postcss": "^4",
     "babel-plugin-react-compiler": "1.0.0",
     "drizzle-kit": "^0.30.6",
+    "electron": "^41.1.1",
+    "electron-builder": "^26.8.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4"
+  },
+  "build": {
+    "appId": "com.nishant.diamonddesk",
+    "productName": "Heera Desk",
+    "directories": { "output": "dist" },
+    "win": { "icon": "electron/icon.ico", "target": "nsis" },
+    "nsis": { "oneClick": false, "perMachine": false }
   }
 }

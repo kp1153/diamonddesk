@@ -8,8 +8,8 @@ export async function GET() {
   const url = google.createAuthorizationURL(state, codeVerifier, ["openid", "profile", "email"]);
 
   const cookieStore = await cookies();
-  cookieStore.set("oauth_state", state, { httpOnly: true, maxAge: 600, path: "/" });
-  cookieStore.set("code_verifier", codeVerifier, { httpOnly: true, maxAge: 600, path: "/" });
+  cookieStore.set("oauth_state", state, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: true });
+  cookieStore.set("code_verifier", codeVerifier, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: true });
 
   return Response.redirect(url.toString());
 }
