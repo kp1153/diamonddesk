@@ -9,6 +9,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="hi">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#f59e0b" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="हीरा डेस्क" />
+      </head>
       <body>
         <div className="flex min-h-screen bg-gray-50">
           <Sidebar />
