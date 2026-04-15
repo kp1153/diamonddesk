@@ -1,5 +1,4 @@
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
 import Script from "next/script";
 
 export const metadata = {
@@ -18,12 +17,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-title" content="हीरा डेस्क" />
       </head>
       <body>
-        <div className="flex min-h-screen bg-gray-50">
-          <Sidebar />
-          <main className="flex-1 p-4 md:p-8 pt-16 pb-24 md:pt-8 md:pb-8 overflow-auto">
-            {children}
-          </main>
-        </div>
+        {children}
 
         <div id="google_translate_element" className="fixed bottom-20 right-4 z-50 md:bottom-4" />
 
