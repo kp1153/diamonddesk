@@ -12,7 +12,6 @@
     "electron:build": "electron-builder --win --x64"
   },
   "dependencies": {
-    "@libsql/client": "^0.14.0",
     "arctic": "^2.3.4",
     "dotenv": "^17.4.0",
     "drizzle-orm": "^0.41.0",
@@ -34,7 +33,17 @@
   "build": {
     "appId": "com.nishant.diamonddesk",
     "productName": "Heera Desk",
-    "directories": { "output": "dist" },
+    "npmRebuild": false,
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": false,
+    "directories": { "output": "electron/dist" },
+    "files": [
+      "electron/main.js",
+      "electron/icon.ico"
+    ],
+    "extraMetadata": {
+      "main": "electron/main.js"
+    },
     "win": { "icon": "electron/icon.ico", "target": "nsis" },
     "nsis": { "oneClick": false, "perMachine": false }
   }

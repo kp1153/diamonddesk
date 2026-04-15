@@ -25,6 +25,10 @@ export async function POST(request) {
     phone: body.phone,
     stage: body.stage,
     advance: parseFloat(body.advance) || 0,
+    rateAari: parseFloat(body.rateAari) || 0,
+    rateGhisai: parseFloat(body.rateGhisai) || 0,
+    ratePolish: parseFloat(body.ratePolish) || 0,
+    rateJanch: parseFloat(body.rateJanch) || 0,
   });
   return Response.json({ ok: true });
 }

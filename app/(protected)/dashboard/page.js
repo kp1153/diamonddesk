@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
-import { karigars, lots, assignments } from "@/lib/schema";
-import { eq, and, count } from "drizzle-orm";
+import { karigars, lots, assignments, sales } from "@/lib/schema";
+import { eq, and, count, sum } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -21,11 +21,17 @@ export default async function Dashboard() {
     ? Math.ceil((new Date(session.expiryDate) - new Date()) / (1000 * 60 * 60 * 24))
     : 0;
 
-  const [karigarCount, lotCount, pendingAssign] = await Promise.all([
-    db.select({ count: count() }).from(karigars).where(eq(karigars.userId, session.userId)),
-    db.select({ count: count() }).from(lots).where(eq(lots.userId, session.userId)),
+  const userId = parseInt(session.userId);
+
+  const [karigarCount, lotCount, pendingAssign, totalSales, pendingWages] = await Promise.all([
+    db.select({ count: count() }).from(karigars).where(eq(karigars.userId, userId)),
+    db.select({ count: count() }).from(lots).where(eq(lots.userId, userId)),
     db.select({ count: count() }).from(assignments).where(
-      and(eq(assignments.userId, session.userId), eq(assignments.status, "लंबित"))
+      and(eq(assignments.userId, userId), eq(assignments.status, "लंबित"))
+    ),
+    db.select({ total: sum(sales.amount) }).from(sales).where(eq(sales.userId, userId)),
+    db.select({ total: sum(assignments.wages) }).from(assignments).where(
+      and(eq(assignments.userId, userId), eq(assignments.status, "लंबित"))
     ),
   ]);
 
@@ -33,6 +39,8 @@ export default async function Dashboard() {
     { label: "कुल कारीगर", value: karigarCount[0].count, color: "text-amber-500", bg: "bg-amber-50 border-amber-200" },
     { label: "कुल लॉट", value: lotCount[0].count, color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
     { label: "लंबित काम", value: pendingAssign[0].count, color: "text-orange-600", bg: "bg-orange-50 border-orange-200" },
+    { label: "कुल बिक्री", value: `₹${totalSales[0]?.total || 0}`, color: "text-green-600", bg: "bg-green-50 border-green-200" },
+    { label: "लंबित मजदूरी", value: `₹${pendingWages[0]?.total || 0}`, color: "text-purple-600", bg: "bg-purple-50 border-purple-200" },
   ];
 
   return (
@@ -58,11 +66,11 @@ export default async function Dashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {stats.map(({ label, value, color, bg }) => (
           <div key={label} className={`border rounded-xl p-5 ${bg}`}>
             <p className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">{label}</p>
-            <p className={`text-4xl font-extrabold ${color}`}>{value}</p>
+            <p className={`text-3xl font-extrabold ${color}`}>{value}</p>
           </div>
         ))}
       </div>

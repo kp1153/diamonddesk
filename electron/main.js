@@ -1,5 +1,4 @@
 const { app, BrowserWindow } = require("electron");
-const path = require("path");
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -7,9 +6,11 @@ function createWindow() {
     height: 800,
     webPreferences: {
       nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: false,
     },
   });
-  win.loadURL("https://diamonddesk.vercel.app");
+  win.loadURL("https://heera.nishantsoftwares.in");
 }
 
 app.whenReady().then(createWindow);
