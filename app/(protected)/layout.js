@@ -1,5 +1,7 @@
 import Sidebar from "@/components/Sidebar";
 
+export const dynamic = "force-dynamic";
+
 export default function ProtectedLayout({ children }) {
   return (
     <div className="flex min-h-screen bg-gray-50">
