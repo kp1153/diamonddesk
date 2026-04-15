@@ -16,11 +16,19 @@ export default function Assignments() {
     return r.json();
   });
 
-  const load = () => safeFetch("/api/assignments").then(data => { if (data && Array.isArray(data)) setRows(data); });
-  const loadKarigars = () => safeFetch("/api/karigars").then(data => { if (data && Array.isArray(data)) setKarigars(data); });
-  const loadLots = () => safeFetch("/api/lots").then(data => { if (data && Array.isArray(data)) setLots(data); });
+  useEffect(() => {
+    Promise.all([
+      safeFetch("/api/assignments"),
+      safeFetch("/api/karigars"),
+      safeFetch("/api/lots"),
+    ]).then(([assignmentsData, karigarsData, lotsData]) => {
+      if (assignmentsData && Array.isArray(assignmentsData)) setRows(assignmentsData);
+      if (karigarsData && Array.isArray(karigarsData)) setKarigars(karigarsData);
+      if (lotsData && Array.isArray(lotsData)) setLots(lotsData);
+    });
+  }, []);
 
-  useEffect(() => { load(); loadKarigars(); loadLots(); }, []);
+  const load = () => safeFetch("/api/assignments").then(data => { if (data && Array.isArray(data)) setRows(data); });
 
   const submit = async () => {
     await fetch("/api/assignments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
