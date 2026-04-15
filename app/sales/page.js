@@ -6,7 +6,11 @@ export default function Sales() {
   const [show, setShow] = useState(false);
   const [form, setForm] = useState({ invoiceNo: "", buyer: "", date: "", weight: "", amount: "", status: "लंबित" });
 
-  const load = () => fetch("/api/sales").then(r => r.json()).then(data => { if (Array.isArray(data)) setRows(data); });
+  const load = () => fetch("/api/sales").then(r => {
+    if (r.status === 401) { window.location.href = "/"; return null; }
+    return r.json();
+  }).then(data => { if (data && Array.isArray(data)) setRows(data); });
+
   useEffect(() => { load(); }, []);
 
   const submit = async () => {
@@ -33,7 +37,13 @@ export default function Sales() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 shadow-xl">
             <h2 className="text-lg font-bold text-stone-900">नई बिक्री जोड़ें</h2>
-            {[["invoiceNo","बिल नंबर"],["buyer","पार्टी का नाम"],["date","तारीख (YYYY-MM-DD)"],["weight","वजन (कैरेट)"],["amount","राशि (₹)"]].map(([k,l]) => (
+            {[["invoiceNo","बिल नंबर"],["buyer","पार्टी का नाम"]].map(([k,l]) => (
+              <input key={k} placeholder={l} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})}
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base outline-none focus:border-amber-400" />
+            ))}
+            <input type="date" value={form.date} onChange={e => setForm({...form, date: e.target.value})}
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base outline-none focus:border-amber-400" />
+            {[["weight","वजन (कैरेट)"],["amount","राशि (₹)"]].map(([k,l]) => (
               <input key={k} placeholder={l} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})}
                 className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base outline-none focus:border-amber-400" />
             ))}

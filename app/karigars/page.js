@@ -6,8 +6,11 @@ export default function Karigars() {
   const [show, setShow] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", stage: "आरी", advance: "" });
 
-  const load = () => fetch("/api/karigars").then(r => r.json()).then(data => {
-    if (!Array.isArray(data)) return;
+  const load = () => fetch("/api/karigars").then(r => {
+    if (r.status === 401) { window.location.href = "/"; return; }
+    return r.json();
+  }).then(data => {
+    if (!data || !Array.isArray(data)) return;
     setRows(data);
   });
 

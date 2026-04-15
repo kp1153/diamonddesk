@@ -11,9 +11,14 @@ export default function Assignments() {
   const [form, setForm] = useState({ karigarId: "", lotId: "", issuedWeight: "", stage: "आरी" });
   const [returnForm, setReturnForm] = useState({ returnedWeight: "", wages: "" });
 
-  const load = () => fetch("/api/assignments").then(r => r.json()).then(data => { if (Array.isArray(data)) setRows(data); });
-  const loadKarigars = () => fetch("/api/karigars").then(r => r.json()).then(data => { if (Array.isArray(data)) setKarigars(data); });
-  const loadLots = () => fetch("/api/lots").then(r => r.json()).then(data => { if (Array.isArray(data)) setLots(data); });
+  const safeFetch = (url) => fetch(url).then(r => {
+    if (r.status === 401) { window.location.href = "/"; return null; }
+    return r.json();
+  });
+
+  const load = () => safeFetch("/api/assignments").then(data => { if (data && Array.isArray(data)) setRows(data); });
+  const loadKarigars = () => safeFetch("/api/karigars").then(data => { if (data && Array.isArray(data)) setKarigars(data); });
+  const loadLots = () => safeFetch("/api/lots").then(data => { if (data && Array.isArray(data)) setLots(data); });
 
   useEffect(() => { load(); loadKarigars(); loadLots(); }, []);
 

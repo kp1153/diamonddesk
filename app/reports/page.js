@@ -10,11 +10,13 @@ export default async function Reports() {
   const session = await getSession(cookieStore.get("session")?.value);
   if (!session) redirect("/");
 
+  const userId = parseInt(session.userId);
+
   const [कुलकारीगर, कुललॉट, लंबितकाम, कुलबिक्री] = await Promise.all([
-    db.select({ count: count() }).from(karigars).where(eq(karigars.userId, session.userId)),
-    db.select({ count: count() }).from(lots).where(eq(lots.userId, session.userId)),
-    db.select({ count: count() }).from(assignments).where(and(eq(assignments.userId, session.userId), eq(assignments.status, "लंबित"))),
-    db.select({ total: sum(sales.amount) }).from(sales).where(eq(sales.userId, session.userId)),
+    db.select({ count: count() }).from(karigars).where(eq(karigars.userId, userId)),
+    db.select({ count: count() }).from(lots).where(eq(lots.userId, userId)),
+    db.select({ count: count() }).from(assignments).where(and(eq(assignments.userId, userId), eq(assignments.status, "लंबित"))),
+    db.select({ total: sum(sales.amount) }).from(sales).where(eq(sales.userId, userId)),
   ]);
 
   const stats = [

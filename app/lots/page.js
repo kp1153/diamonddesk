@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 export default function Lots() {
   const [rows, setRows] = useState([]);
   const [show, setShow] = useState(false);
-  const [form, setForm] = useState({ lotNo: "", roughWeight: "", polishWeight: "", shape: "", quality: "", status: "लंबित" });
+  const [form, setForm] = useState({ lotNo: "", roughWeight: "", polishWeight: "", shape: "", quality: "", color: "", status: "लंबित" });
 
-  const load = () => fetch("/api/lots").then(r => r.json()).then(data => {
-    if (!Array.isArray(data)) return;
+  const load = () => fetch("/api/lots").then(r => {
+    if (r.status === 401) { window.location.href = "/"; return; }
+    return r.json();
+  }).then(data => {
+    if (!data || !Array.isArray(data)) return;
     setRows(data);
   });
 
@@ -16,7 +19,7 @@ export default function Lots() {
   const submit = async () => {
     await fetch("/api/lots", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
     setShow(false);
-    setForm({ lotNo: "", roughWeight: "", polishWeight: "", shape: "", quality: "", status: "लंबित" });
+    setForm({ lotNo: "", roughWeight: "", polishWeight: "", shape: "", quality: "", color: "", status: "लंबित" });
     load();
   };
 
@@ -37,13 +40,13 @@ export default function Lots() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 shadow-xl">
             <h2 className="text-lg font-bold text-stone-900">नया लॉट जोड़ें</h2>
-            {[["lotNo","लॉट नंबर"],["roughWeight","कच्चा वजन (कैरेट)"],["polishWeight","पॉलिश वजन (कैरेट)"],["shape","आकार"],["quality","गुणवत्ता"]].map(([k,l]) => (
+            {[["lotNo","लॉट नंबर"],["roughWeight","कच्चा वजन (कैरेट)"],["polishWeight","पॉलिश वजन (कैरेट)"],["shape","आकार"],["quality","गुणवत्ता (VVS1/VS1/SI1...)"],["color","रंग (D/E/F/G...)"]].map(([k,l]) => (
               <input key={k} placeholder={l} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})}
                 className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base outline-none focus:border-amber-400" />
             ))}
             <select value={form.status} onChange={e => setForm({...form, status: e.target.value})}
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base outline-none focus:border-amber-400">
-              {["लंबित","काम चल रहा है","पूर्ण"].map(s => <option key={s}>{s}</option>)}
+              {["लंबित","काम चल रहा है","पूर्ण","बिका"].map(s => <option key={s}>{s}</option>)}
             </select>
             <div className="flex gap-3 pt-2">
               <button onClick={submit} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-lg text-base">सेव करें</button>
@@ -65,7 +68,7 @@ export default function Lots() {
             </div>
             <p className="text-stone-500 text-sm">कच्चा वजन: {row.roughWeight} कैरेट</p>
             <p className="text-stone-500 text-sm">पॉलिश वजन: {row.polishWeight ? `${row.polishWeight} कैरेट` : "—"}</p>
-            <p className="text-stone-500 text-sm">आकार: {row.shape || "—"} | गुणवत्ता: {row.quality || "—"}</p>
+            <p className="text-stone-500 text-sm">आकार: {row.shape || "—"} | गुणवत्ता: {row.quality || "—"} | रंग: {row.color || "—"}</p>
             <p className="text-stone-500 text-sm">स्थिति: {row.status}</p>
           </div>
         ))}
@@ -76,14 +79,14 @@ export default function Lots() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              {["लॉट नंबर","कच्चा वजन","पॉलिश वजन","आकार","गुणवत्ता","स्थिति",""].map(h => (
+              {["लॉट नंबर","कच्चा वजन","पॉलिश वजन","आकार","गुणवत्ता","रंग","स्थिति",""].map(h => (
                 <th key={h} className="px-5 py-3 text-left text-xs font-bold text-stone-500 uppercase tracking-widest">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
-              <tr><td colSpan={7} className="px-5 py-8 text-center text-stone-400">कोई लॉट नहीं</td></tr>
+              <tr><td colSpan={8} className="px-5 py-8 text-center text-stone-400">कोई लॉट नहीं</td></tr>
             ) : rows.map(row => (
               <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="px-5 py-3 font-semibold text-stone-700">{row.lotNo}</td>
@@ -91,6 +94,7 @@ export default function Lots() {
                 <td className="px-5 py-3 text-stone-600">{row.polishWeight ? `${row.polishWeight} कैरेट` : "—"}</td>
                 <td className="px-5 py-3 text-stone-600">{row.shape || "—"}</td>
                 <td className="px-5 py-3 text-stone-600">{row.quality || "—"}</td>
+                <td className="px-5 py-3 text-stone-600">{row.color || "—"}</td>
                 <td className="px-5 py-3 text-stone-600">{row.status}</td>
                 <td className="px-5 py-3"><button onClick={() => del(row.id)} className="text-red-400 hover:text-red-600 text-xs font-semibold">हटाएं</button></td>
               </tr>
