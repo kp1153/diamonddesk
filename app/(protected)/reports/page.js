@@ -23,7 +23,7 @@ export default async function Reports() {
     { शीर्षक: "कुल कारीगर", मूल्य: कुलकारीगर[0].count, रंग: "text-amber-500", पृष्ठभूमि: "bg-amber-50 border-amber-200" },
     { शीर्षक: "कुल लॉट", मूल्य: कुललॉट[0].count, रंग: "text-blue-600", पृष्ठभूमि: "bg-blue-50 border-blue-200" },
     { शीर्षक: "लंबित काम", मूल्य: लंबितकाम[0].count, रंग: "text-orange-600", पृष्ठभूमि: "bg-orange-50 border-orange-200" },
-    { शीर्षक: "कुल बिक्री", मूल्य: `₹${कुलबिक्री[0].total || 0}`, रंग: "text-green-600", पृष्ठभूमि: "bg-green-50 border-green-200" },
+    { शीर्षक: "कुल बिक्री", मूल्य: `₹${कुलबिक्री[0]?.total || 0}`, रंग: "text-green-600", पृष्ठभूमि: "bg-green-50 border-green-200" },
   ];
 
   return (
