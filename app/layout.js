@@ -1,5 +1,6 @@
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import Script from "next/script";
 
 export const metadata = {
   title: "हीरा डेस्क",
@@ -23,6 +24,23 @@ export default function RootLayout({ children }) {
             {children}
           </main>
         </div>
+
+        <div id="google_translate_element" className="fixed bottom-20 right-4 z-50 md:bottom-4" />
+
+        <Script
+          src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+          strategy="afterInteractive"
+        />
+        <Script id="google-translate-init" strategy="afterInteractive">
+          {`
+            function googleTranslateElementInit() {
+              new google.translate.TranslateElement(
+                { pageLanguage: 'hi', includedLanguages: 'gu,hi', layout: google.translate.TranslateElement.InlineLayout.SIMPLE },
+                'google_translate_element'
+              );
+            }
+          `}
+        </Script>
       </body>
     </html>
   );
