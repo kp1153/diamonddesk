@@ -60,6 +60,7 @@ export async function GET(request) {
     path: "/",
     sameSite: "lax",
     secure: true,
+    domain: "heera.nishantsoftwares.in",
   });
 
   return response;
