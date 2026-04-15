@@ -15,7 +15,7 @@ export async function GET(request) {
   const storedState = cookieStore.get("oauth_state")?.value;
   const codeVerifier = cookieStore.get("code_verifier")?.value;
 
-  if (!code || state !== storedState) {
+  if (!code || !codeVerifier || state !== storedState) {
     return new Response("Invalid state", { status: 400 });
   }
 
@@ -27,20 +27,25 @@ export async function GET(request) {
   });
   const googleUser = await googleRes.json();
 
+  if (!googleUser.email) {
+    return new Response("Google email not found", { status: 400 });
+  }
+
   let existing = await db.select().from(users).where(eq(users.email, googleUser.email));
   let user;
 
   if (existing.length === 0) {
     const expiry = new Date();
     expiry.setDate(expiry.getDate() + 7);
-    const inserted = await db.insert(users).values({
+    await db.insert(users).values({
       email: googleUser.email,
       name: googleUser.name,
       image: googleUser.picture,
       status: "trial",
-      expiryDate: expiry,
+      expiryDate: expiry.toISOString(),
       reminderSent: "no",
-    }).returning();
+    });
+    const inserted = await db.select().from(users).where(eq(users.email, googleUser.email));
     user = inserted[0];
   } else {
     user = existing[0];
