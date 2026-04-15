@@ -21,6 +21,7 @@ export async function GET() {
     issuedAt: assignments.issuedAt,
     returnedAt: assignments.returnedAt,
     karigarName: karigars.name,
+    karigarPhone: karigars.phone,
     lotNo: lots.lotNo,
   })
   .from(assignments)

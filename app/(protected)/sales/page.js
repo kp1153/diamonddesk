@@ -26,6 +26,45 @@ export default function Sales() {
     load();
   };
 
+  const printInvoice = (row) => {
+    const win = window.open("", "_blank");
+    win.document.write(`
+      <html>
+      <head>
+        <title>Invoice - ${row.invoiceNo}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 40px; max-width: 600px; margin: auto; }
+          h1 { font-size: 24px; text-align: center; margin-bottom: 4px; }
+          .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 30px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          td, th { border: 1px solid #ddd; padding: 10px; font-size: 14px; }
+          th { background: #f5f5f5; font-weight: bold; }
+          .total { font-size: 18px; font-weight: bold; text-align: right; margin-top: 20px; }
+          .footer { margin-top: 40px; text-align: center; color: #999; font-size: 12px; }
+          @media print { button { display: none; } }
+        </style>
+      </head>
+      <body>
+        <h1>हीरा डेस्क</h1>
+        <div class="subtitle">Diamond Invoice</div>
+        <table>
+          <tr><th>बिल नंबर</th><td>${row.invoiceNo}</td></tr>
+          <tr><th>पार्टी</th><td>${row.buyer}</td></tr>
+          <tr><th>तारीख</th><td>${row.date}</td></tr>
+          <tr><th>वजन</th><td>${row.weight} कैरेट</td></tr>
+          <tr><th>राशि</th><td>₹${row.amount}</td></tr>
+          <tr><th>स्थिति</th><td>${row.status}</td></tr>
+        </table>
+        <div class="total">कुल राशि: ₹${row.amount}</div>
+        <div class="footer">हीरा डेस्क — निशांत सॉफ्टवेयर्स</div>
+        <br/>
+        <button onclick="window.print()">🖨️ Print</button>
+      </body>
+      </html>
+    `);
+    win.document.close();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -67,7 +106,10 @@ export default function Sales() {
           <div key={row.id} className="bg-white border border-gray-200 rounded-xl p-4 space-y-2">
             <div className="flex items-center justify-between">
               <p className="font-extrabold text-stone-800 text-lg">{row.buyer}</p>
-              <button onClick={() => del(row.id)} className="text-red-400 text-sm font-semibold">हटाएं</button>
+              <div className="flex gap-2">
+                <button onClick={() => printInvoice(row)} className="text-amber-500 text-sm font-semibold">🖨️</button>
+                <button onClick={() => del(row.id)} className="text-red-400 text-sm font-semibold">हटाएं</button>
+              </div>
             </div>
             <p className="text-stone-500 text-sm">बिल: {row.invoiceNo} | तारीख: {row.date}</p>
             <p className="text-stone-500 text-sm">वजन: {row.weight} कैरेट | राशि: ₹{row.amount}</p>
@@ -97,7 +139,10 @@ export default function Sales() {
                 <td className="px-5 py-3 text-stone-600">{row.weight} कैरेट</td>
                 <td className="px-5 py-3 text-stone-600">₹{row.amount}</td>
                 <td className="px-5 py-3 text-stone-600">{row.status}</td>
-                <td className="px-5 py-3"><button onClick={() => del(row.id)} className="text-red-400 hover:text-red-600 text-xs font-semibold">हटाएं</button></td>
+                <td className="px-5 py-3 flex gap-2">
+                  <button onClick={() => printInvoice(row)} className="text-amber-500 hover:text-amber-700 text-xs font-semibold">🖨️ Print</button>
+                  <button onClick={() => del(row.id)} className="text-red-400 hover:text-red-600 text-xs font-semibold">हटाएं</button>
+                </td>
               </tr>
             ))}
           </tbody>
