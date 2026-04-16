@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 export async function POST(request) {
   const { email, name, plan, secret } = await request.json();
 
-  if (secret !== process.env.ACTIVATION_SECRET) {
+  if (secret !== process.env.HUB_SECRET) {
     return Response.json({ success: false }, { status: 401 });
   }
 
