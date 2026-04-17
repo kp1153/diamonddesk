@@ -3,19 +3,10 @@ import { karigars, lots, assignments, sales } from "@/lib/schema";
 import { eq, and, count, sum } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getSession } from "@/lib/session";
-import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
   const cookieStore = await cookies();
   const session = await getSession(cookieStore.get("session")?.value);
-  if (!session) redirect("/");
-
-  if (session.status !== "active") {
-    const expiry = session.expiryDate ? new Date(session.expiryDate) : null;
-    if (!expiry || new Date() > expiry) {
-      redirect("https://www.nishantsoftwares.in?expired=1");
-    }
-  }
 
   const daysLeft = session.expiryDate
     ? Math.ceil((new Date(session.expiryDate) - new Date()) / (1000 * 60 * 60 * 24))
