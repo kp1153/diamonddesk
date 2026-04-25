@@ -1,4 +1,13 @@
-export default function ExpiredPage() {
+import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
+
+export default async function ExpiredPage() {
+  const cookieStore = await cookies();
+  const session = await getSession(cookieStore.get("session")?.value);
+  const email = session?.email ?? "";
+
+  const paymentURL = `https://nishantsoftwares.in/payment?software=heera&email=${encodeURIComponent(email)}`;
+
   return (
     <main className="min-h-screen bg-stone-950 flex items-center justify-center px-4">
       <div className="bg-stone-900 border border-stone-800 rounded-3xl p-10 w-full max-w-md text-center">
@@ -16,7 +25,7 @@ export default function ExpiredPage() {
           <p className="text-stone-500 text-xs">Renewal: ₹1,999/साल</p>
         </div>
 
-        <a href="https://nishantsoftwares.in/heera"
+        <a href={paymentURL}
           className="block w-full py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl text-base mb-3 transition-colors">
           License खरीदें — ₹4,999
         </a>
