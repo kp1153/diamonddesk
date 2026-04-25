@@ -24,8 +24,8 @@ export async function GET(request) {
   const state = searchParams.get("state");
 
   const cookieStore = await cookies();
-  const savedState = cookieStore.get("oauth_state")?.value;
-  const codeVerifier = cookieStore.get("code_verifier")?.value;
+  const savedState = cookieStore.get("google_state")?.value;
+  const codeVerifier = cookieStore.get("google_code_verifier")?.value;
 
   if (!code || !state || state !== savedState) {
     return NextResponse.redirect(new URL("/login?error=invalid", request.url));

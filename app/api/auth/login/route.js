@@ -10,8 +10,8 @@ export async function GET() {
   const url = google.createAuthorizationURL(state, codeVerifier, ["openid", "profile", "email"]);
 
   const response = NextResponse.redirect(url.toString());
-  response.cookies.set("oauth_state", state, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: isProduction });
-  response.cookies.set("code_verifier", codeVerifier, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: isProduction });
+  response.cookies.set("google_state", state, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: isProduction });
+  response.cookies.set("google_code_verifier", codeVerifier, { httpOnly: true, maxAge: 600, path: "/", sameSite: "lax", secure: isProduction });
 
   return response;
 }
