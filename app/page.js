@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "next/link";  // यह हटाओ
 
 export default function Home() {
   return (
@@ -11,10 +11,12 @@ export default function Home() {
         <p className="text-stone-400 text-base max-w-xs mx-auto">
           कारीगर, लॉट, मजदूरी — सब एक जगह।
         </p>
-        <Link href="/api/auth/login"
-          className="inline-block bg-amber-500 hover:bg-amber-400 text-black font-bold px-8 py-3 rounded-xl text-sm transition-colors mt-4">
+        <a
+          href="/api/auth/login"
+          className="inline-block bg-amber-500 hover:bg-amber-400 text-black font-bold px-8 py-3 rounded-xl text-sm transition-colors mt-4"
+        >
           गूगल से लॉगिन करें
-        </Link>
+        </a>
       </div>
     </div>
   );
