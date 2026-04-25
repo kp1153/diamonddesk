@@ -49,6 +49,25 @@ export async function GET(request) {
       .where(eq(users.googleId, googleUser.id));
 
     if (result.length === 0) {
+      result = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, googleUser.email));
+
+      if (result.length > 0) {
+        await db
+          .update(users)
+          .set({ googleId: googleUser.id, image: googleUser.picture })
+          .where(eq(users.email, googleUser.email));
+
+        result = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, googleUser.email));
+      }
+    }
+
+    if (result.length === 0) {
       const expiry = new Date();
       expiry.setDate(expiry.getDate() + 7);
 
