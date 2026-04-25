@@ -44,8 +44,10 @@ export default async function Dashboard() {
       {session.status === "trial" && daysLeft <= 3 && (
         <div className="bg-red-50 border border-red-200 rounded-xl px-5 py-4">
           <p className="text-red-600 font-bold text-sm">⚠️ आपका मुफ्त परीक्षण {daysLeft} दिन में समाप्त होगा।</p>
-          <a href={"https://www.nishantsoftwares.in?email=" + encodeURIComponent(session.email)}
-            className="inline-block mt-2 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-red-600 transition">
+          
+            href={"https://www.nishantsoftwares.in/payment?email=" + encodeURIComponent(session.email)}
+            className="inline-block mt-2 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-red-600 transition"
+          >
             अभी खरीदें
           </a>
         </div>
